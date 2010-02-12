@@ -8,8 +8,12 @@
  */
 class casetracker_views_handler_field_property_name extends views_handler_field {
 
+  /**
+   * Not sure how to properties to their template - probably need a field for each.
+   */
   function render($values) {
     if ($values->{$this->field_alias}) {
+      // TODO retrieve the appropriate template and use the human readable name of the property.
       return check_plain($values->{$this->field_alias});
     }
     return '';

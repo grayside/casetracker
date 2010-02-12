@@ -41,6 +41,8 @@ function casetracker_views_data() {
   );
   foreach ($types as $type) {
     if ($template = casetracker_is_case($type)) {
+      // Each template can have a 'meta' field which is expanded according to
+      // template itself.
       $data['casetracker_update']['cuid'] = array(
 	'title' => $template, // TODO use human readable version.
 	'help' => t('Case update information.'),
@@ -62,12 +64,12 @@ function casetracker_views_data() {
   $data['casetracker_update_property']['property'] = array(
     'title' => t('Property'),
     'help' => t('Type of case property'),
-    'field' => array('handler' => 'views_handler_field'),
+    'field' => array('handler' => 'casetracker_views_handler_field_property_name'),
   );
   $data['casetracker_update_property']['value'] = array(
     'title' => t('Value'),
     'help' => t('Cached value of a property'),
-    'field' => array('handler' => 'views_handler_field'),
+    'field' => array('handler' => 'casetracker_views_handler_field_property_value'),
   );
   return $data;
 }
@@ -92,12 +94,6 @@ function casetracker_views_data_alter(&$data) {
     ),
   );
   */
-  $data['casetracker_update_property']['state'] = array(
-    'title' => t('State'),
-    'help' => t('The state of the case'),
-    'real field' => 'reference',
-    'field' => array('handler' => 'views_handler_field'),
-  );
 }
 
 /**
@@ -124,12 +120,14 @@ function casetracker_views_handlers() {
       'casetracker_views_handler_field_priority_name' => array(
         'parent' => 'views_handler_field',
       ),
-      'casetracker_views_handler_field_status_name' => array(
+      */
+      'casetracker_views_handler_field_property_name' => array(
         'parent' => 'views_handler_field',
       ),
-      'casetracker_views_handler_field_type_name' => array(
+      'casetracker_views_handler_field_property_value' => array(
         'parent' => 'views_handler_field',
       ),
+      /*
       'casetracker_views_handler_field_case_count' => array(
         'parent' => 'views_handler_field',
       ),
