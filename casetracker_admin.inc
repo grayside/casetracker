@@ -188,11 +188,18 @@ function casetracker_states() {
   $states = ctools_export_load_object('casetracker_states', 'all');
   $form = array('#theme' => 'casetracker_states_form');
   $form['states'] = array('#tree' => true);
+  $form['realms'] = array('#tree' => true);
 
   $realms = casetracker_realm_list();
   foreach ($realms as $realm => $name) {
-    $form['states'][$realm] = array('#value' => $name);
-    // TODO add delete and edit links for realms.
+    $form['states'][$realm] = array();
+    $form['realms'][$realm] = array(
+      'name' => array('#value' => $name),
+      'operations' => array(
+        '#value' => l('edit', "admin/settings/casetracker/realms/$realm/edit"  ) .' | '. 
+                    l('delete', "admin/settings/casetracker/realms/$realm/delete"),
+      ),
+    );
   }
 
   if (!empty($states)) {
@@ -246,10 +253,12 @@ function casetracker_states() {
   $form['realm']['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Realm'),
+    '#default_value' => ($realm ? $realm->title : '')
   );
   $form['realm']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Machine name'),
+    '#default_value' => ($realm ? $realm->name : '')
   );
   $form['realm']['submit'] = array(
     '#type' => 'submit',
@@ -272,11 +281,13 @@ function theme_casetracker_states_form($form) {
       // drupal_add_tabledrag('casetracker_states_admin', 'order', 'sibling', "state-weight", "state-weight-$realm");
       // drupal_add_tabledrag('casetracker_states_admin', 'match', 'sibling', "realm-select", "realm-select-$realm", null, false);
     }
-    $rows[] = array(array(
-      'data' => check_plain($form['states'][$realm]['#value']), 
-      'colspan' => count($form['states'][$realm][$i]),
-    ));
-    unset($form['states'][$realm]['#value']);
+    $rows[] = array(
+      array(
+        'data' => drupal_render($form['realms'][$realm]['name']), 
+        'colspan' => 4,
+      ),
+      drupal_render($form['realms'][$realm]['operations']), 
+    );
     foreach (element_children($form['states'][$realm]) as $i) {
       $row = array();
       foreach(element_children($form['states'][$realm][$i]) as $j) {
@@ -296,7 +307,7 @@ function theme_casetracker_states_form($form) {
 }
 
 /**
- * TODO delete unused realms.
+ * Submit handler for main case state administration page.
  */
 function casetracker_states_submit($form, &$form_state) {
   ctools_include('export');
@@ -337,6 +348,7 @@ function casetracker_realm_add_submit($form, &$form_state) {
   $realms[$name] = $title;
   variable_set('casetracker_realms', $realms);
   drupal_set_message(t('Updated realm: %title', array('%title' => $title)));
+  $form_state['redirect'] = 'admin/settings/casetracker/states';
 }
 
 /**
@@ -428,4 +440,59 @@ function casetracker_case_state_confirm_delete_submit($form, &$form_state) {
   drupal_set_message(t('Deleted case state %name.', array('%name' =>  $form_state['values']['name'])));
   casetracker_case_state_delete($form_state['values']['csid']);
   $form_state['redirect'] = 'admin/settings/casetracker/states';
+}
+
+/**
+ * Form for editing a realm.
+ */
+function casetracker_realm_edit($form_state, $realm) {
+  $form = array();
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Realm'),
+    '#default_value' => $realm->title,
+  );
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $realm->name,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+    '#submit' => array('casetracker_realm_add_submit'),
+  );
+
+  // Place under 'realm' to share the submit handler, for now...
+  $form = array('realm' => $form + array('#tree' => true));
+  return $form;
+}
+
+/**
+ * Confirmation form for realm deletion.
+ */
+function casetracker_realm_delete_confirm($form_state, $realm) {
+  $form = array();
+  $states = casetracker_realm_states($realm->name);
+  if (!empty($states)) {
+    $form[] = array('#value' => t('All states must be removed from a realm before it can be deleted.'));
+  }
+  else {
+    $form[] = array('#value' => '<p>' . t('Are you sure you want to delete the realm %realm?', array('%realm' => $realm->name)) . '</p>');
+    $form['realm'] = array('#type' => 'value', '#value' => $realm);
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete')
+    );
+  }
+  return $form;
+}
+
+// Submit handler for realm deletion
+function casetracker_realm_delete_confirm_submit($form, &$form_state) {
+  $realms = variable_get('casetracker_realms', array());
+  unset($realms[$form_state['values']['realm']->name]);
+  variable_set('casetracker_realms', $realms);
+  drupal_set_message(t('Deleted realm: %title', array('%title' => $form_state['values']['realm']->title)));
+  $form_state['redirect'] = 'admin/settings/casetracker/states';
+
 }

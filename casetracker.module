@@ -190,6 +190,22 @@ function casetracker_menu() {
     'title' => 'Disable case state',
     'type' => MENU_CALLBACK,
   );
+  $items['admin/settings/casetracker/realms/%casetracker_realm/edit'] = array(
+    'file' => 'casetracker_admin.inc',
+    'access arguments' => array('administer case tracker'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('casetracker_realm_edit', 4),
+    'title' => 'Edit case realm',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/casetracker/realms/%casetracker_realm/delete'] = array(
+    'file' => 'casetracker_admin.inc',
+    'access arguments' => array('administer case tracker'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('casetracker_realm_delete_confirm', 4),
+    'title' => 'Delete case realm',
+    'type' => MENU_CALLBACK,
+  );
   /* casetracker autocomplete */
   $items['casetracker_autocomplete'] = array(
     'title' => 'Case Tracker autocomplete',
@@ -678,8 +694,19 @@ function casetracker_state_delete($name = NULL) {
  * @return
  *   array with the keys being the state ID and the values being their names.
  */
-function casetracker_realm_load($realm) {
+function casetracker_realm_states($realm) {
   return casetracker_state_load(null, $realm);
+}
+
+/**
+ * Load a simple class that represents a realm.
+ */
+function casetracker_realm_load($name) {
+  $realms = casetracker_realm_list();
+  $realm = new stdClass();
+  $realm->name = $name;
+  $realm->title = $realms[$name];
+  return $realm;
 }
 
 /**

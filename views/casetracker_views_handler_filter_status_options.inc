@@ -7,6 +7,6 @@
 class casetracker_views_handler_filter_status_options extends views_handler_filter_many_to_one {
   
   function get_value_options() {
-    $this->value_options = casetracker_realm_load('status');
+    $this->value_options = casetracker_realm_states('status');
   }
 }

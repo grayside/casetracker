@@ -9,7 +9,7 @@
 class casetracker_views_handler_argument_type extends views_handler_argument_numeric {
   function summary_name($data) {
     if (!isset($this->case_type_options)) {
-      $this->case_type_options = casetracker_realm_load('type');
+      $this->case_type_options = casetracker_realm_states('type');
     }
     return $this->case_type_options[$data->{$this->name_alias}];
   }

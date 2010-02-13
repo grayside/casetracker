@@ -113,7 +113,7 @@ function casetracker_actions_take_case_action(&$object, $context = array()) {
  * Select a priority level for the Set Priority action.
  */
 function casetracker_actions_set_priority_action_form($context) {
-  $case_priority_options = casetracker_realm_load('priority');
+  $case_priority_options = casetracker_realm_states('priority');
   $default_priority = variable_get('casetracker_default_case_priority', 
     key($case_priority_options));	
 
@@ -138,7 +138,7 @@ function casetracker_actions_set_priority_action_submit($form, $form_state) {
  * Select a status condition for the Set Status action.
  */
 function casetracker_actions_set_status_action_form($context) {
-  $case_status_options = casetracker_realm_load('status');
+  $case_status_options = casetracker_realm_states('status');
   $default_status = variable_get('casetracker_default_case_status', 
     key($case_status_options));	
 
@@ -163,7 +163,7 @@ function casetracker_actions_set_status_action_submit($form, $form_state) {
  * Select a type for the Set Type action.
  */
 function casetracker_actions_set_type_action_form($context) {
-  $case_type_options = casetracker_realm_load('type');
+  $case_type_options = casetracker_realm_states('type');
   $default_type = variable_get('casetracker_default_case_type', key($case_type_options));
 
   $form['casetracker_actions_type'] = array(

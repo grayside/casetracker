@@ -32,7 +32,7 @@ class casetracker_views_handler_field_case_count extends views_handler_field {
       'type' => t('Type'),
     );
     foreach ($realms as $realm => $realm_name) {
-      foreach (casetracker_realm_load($realm) as $csid => $name) {
+      foreach (casetracker_realm_states($realm) as $csid => $name) {
         // @TODO: this is a user-configured string -- should not be wrapped in t().
         $options[$realm_name]["{$realm}-{$csid}"] = t($name);
       }

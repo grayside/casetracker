@@ -17,7 +17,7 @@ class casetracker_property_state extends casetracker_property {
     $form['default_state'] = array(
       '#type' => 'select',
       '#title' => t('Default value'),
-      '#options' => casetracker_realm_load($this->realm),
+      '#options' => casetracker_realm_states($this->realm),
       '#default_value' => $this->default_state,
     );
   }
@@ -26,7 +26,7 @@ class casetracker_property_state extends casetracker_property {
     $form[$this->id] = array(
       '#type' => 'select',
       '#title' => $this->name,
-      '#options' => casetracker_realm_load($this->realm),
+      '#options' => casetracker_realm_states($this->realm),
       '#default_value' => isset($node->casetracker->{$this->id}) ? $node->casetracker->{$this->id} : null,
     );
   }
