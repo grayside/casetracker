@@ -363,7 +363,8 @@ function casetracker_comment(&$comment, $op) {
           foreach ($comment->casetracker as $k => $v) {
             $info[$k] = new stdClass();
             $info[$k]->id = $v;
-            $info[$k]->value = $v; // should be human readable
+            $info[$k]->value = $v; // TODO should be human readable
+            // TODO set previous_value or previous_reference so the change renders in preview.
           }
           $comment->comment = theme('casetracker_case_summary', $template_name, $info) . $comment->comment;
         }
@@ -646,9 +647,9 @@ function casetracker_block_jump_to_case_number_submit($form, $form_state) {
  *
  * @return $values
  *   If only $realm is passed, you'll receive an array with the keys
- *   being the state ID and the values being their names. If a $csid
+ *   being the state ID and the values being their names. If a $name
  *   is also passed, you'll receive just a string of the state name.
- *   If ONLY a $csid is passed, we'll return a list of 'name', 'realm'.
+ *   If ONLY a $name is passed, we'll return a list of 'name', 'realm'.
  */
 function casetracker_state_load($name = NULL, $realm = NULL, $reset = FALSE) {
   ctools_include('export');
