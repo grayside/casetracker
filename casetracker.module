@@ -218,6 +218,13 @@ function casetracker_menu() {
 }
 
 /**
+ * Implementation of hook_help
+ */
+function casetracker_help($path, $arg) {
+  // TODO
+}
+
+/**
  * Implementation of hook_casetracker_properties()
  */
 function casetracker_casetracker_properties() {
