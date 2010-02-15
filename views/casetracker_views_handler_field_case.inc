@@ -31,5 +31,6 @@ class casetracker_views_handler_field_case extends views_handler_field {
    */
   function pre_query() {
     $this->view->field += $this->casetracker_fields;
+    unset($this->view->field['cuid']); // this could be more surgical.
   }
 }
