@@ -5,7 +5,6 @@
  * Implementation of hook_views_data().
  */
 function casetracker_views_data() {
-  $types = array_keys(node_get_types('names'));
   $data = array();
   $data['casetracker_case']['table']['group'] = t('Case Tracker');
   $data['casetracker_case']['table']['join'] = array(
@@ -14,18 +13,14 @@ function casetracker_views_data() {
       'field' => 'nid',
     ),
   );
-  foreach ($types as $type) {
-    if ($template = casetracker_is_case($type)) {
-      $data['casetracker_case']['cuid'] = array(
-	'title' => $template, // TODO use human readable version.
-	'help' => t('Case update information.'),
-	'field' => array(
-	  'handler' => 'casetracker_views_handler_field_case',
-	  'template' => $template,
-	)
-      );
-    }
-  }
+  $data['casetracker_case']['cuid'] = array(
+    'relationship' => array(
+      'base' => 'casetracker_update',
+      'field' => 'cuid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Cases'),
+    ),
+  );
 
   $data['casetracker_update']['table']['group'] = t('Case Tracker');
   $data['casetracker_update']['table']['base'] = array(
@@ -33,23 +28,27 @@ function casetracker_views_data() {
     'title' => t('Case tracker'),
     'help' => t("Updates to cases."),
   );
-  $data['casetracker_update']['table']['join'] = array(
-    'node' => array(
-      'left_field' => 'nid',
+  $data['casetracker_update']['cuid'] = array(
+    'relationship' => array(
+      'base' => 'node',
       'field' => 'nid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Node'),
     ),
   );
+  $types = array_keys(node_get_types('names'));
   foreach ($types as $type) {
     if ($template = casetracker_is_case($type)) {
       // Each template can have a 'meta' field which is expanded according to
       // template itself.
+      $template = casetracker_template_load($template);
       $data['casetracker_update']['cuid'] = array(
-	'title' => $template, // TODO use human readable version.
-	'help' => t('Case update information.'),
-	'field' => array(
-	  'handler' => 'casetracker_views_handler_field_case',
-	  'template' => $template,
-	),
+        'title' => $template->title,
+        'help' => t('Case update information.'),
+        'field' => array(
+          'handler' => 'casetracker_views_handler_field_case',
+          'template' => $template,
+        ),
       );
     }
   }

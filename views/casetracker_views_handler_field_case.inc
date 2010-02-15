@@ -2,7 +2,8 @@
 // $Id$
 
 /**
- *
+ * The 'case' handler is expanded into multiple fields as per the template
+ * definition.
  */
 class casetracker_views_handler_field_case extends views_handler_field {
 
@@ -12,8 +13,7 @@ class casetracker_views_handler_field_case extends views_handler_field {
    */
   function init(&$view, $options) {
     $this->casetracker_fields = array();
-    $template = casetracker_template_load($this->definition['template']);
-    foreach ($template->properties as $property) {
+    foreach ($this->definition['template']->properties as $property) {
       if ($property->views['display']) {
 	$this->casetracker_fields['casetracker_' . $property->id] = $property->view_init($view, $this, $options);
       }
